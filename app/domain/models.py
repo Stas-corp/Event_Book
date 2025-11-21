@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional, Protocol, List
+from typing import Optional, Protocol
 
 # Domain entitiens
 
@@ -18,6 +18,7 @@ class User:
         self.name = name
         self.created_at = created_at
 
+
 class Event:
     def __init__(
         self,
@@ -34,6 +35,7 @@ class Event:
         self.datetime = datetime
         self.max_seats = max_seats
         self.owner_id = owner_id
+
 
 class Booking:
     def __init__(
@@ -59,6 +61,13 @@ class IUser(Protocol):
         password_hash: str, 
         name: str
     ) -> User: ...
+    
+    
+    def get_by_email(
+        self,
+        email: str
+    ) -> Optional[User]: ...
+
 
 class IEvent(Protocol):
     def create(
@@ -69,6 +78,7 @@ class IEvent(Protocol):
         max_seats: int, 
         owner_id: int
     ) -> Event: ...
+
 
 class IBooking(Protocol):
     def create(

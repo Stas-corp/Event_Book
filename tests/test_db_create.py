@@ -7,7 +7,6 @@ from sqlalchemy import inspect
 import app.core.config as config_mod
 import app.adapters.db.base as base_mod
 
-
 # Set DATABASE_URL to in-memory
 os.environ.setdefault("DATABASE_URL", "sqlite:///:memory:")
 
