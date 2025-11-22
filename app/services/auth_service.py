@@ -1,15 +1,35 @@
 from app.domain.models import IUser
-from app.core.security import hash_password, create_jwt_token
+from app.core.config import settings
+from app.core.security import hash_password, create_token_pair
 
 class AuthService:
-    def __init__(self, user_repo: IUser, jwt_secret: str, jwt_expire_minutes: int):
+    def __init__(
+        self,
+        user_repo: IUser,
+        jwt_secret: str,
+        access_jwt_expire_minutes: int = settings.ACCESS_TOKEN_EXPIRE_MINUTES,
+        refresh_jwt_expire_minutes: int = settings.REFRESH_TOKEN_EXPIRE_MINUTES
+    ):
         self.user_repo = user_repo
         self.jwt_secret = jwt_secret
-        self.jwt_expire_minutes = jwt_expire_minutes
-
-    def register_user(self, email: str, password: str, name: str) -> str:
+        self.access_jwt_expire_minutes = access_jwt_expire_minutes
+        self.refresh_jwt_expire_minutes = refresh_jwt_expire_minutes
+    
+    
+    def register_user(
+        self, 
+        email: str, 
+        password: str, 
+        name: str
+    ) -> str:
         if self.user_repo.get_by_email(email):
             raise RuntimeError("Email already in use")
         password_hash = hash_password(password)
         user = self.user_repo.create(email, password_hash, name)
-        return create_jwt_token(user.id, self.jwt_secret, self.jwt_expire_minutes)
+        
+        return create_token_pair(
+            user.id, 
+            self.jwt_secret, 
+            self.access_jwt_expire_minutes,
+            self.refresh_jwt_expire_minutes
+        )

@@ -6,5 +6,6 @@ class Settings(BaseSettings):
     DATABASE_URL: str = "sqlite:///./eventBook.db"
     JWT_SECRET_KEY: str = "JWT_SECRET_KEY"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 20
+    REFRESH_TOKEN_EXPIRE_MINUTES: int = 10000
 
 settings = Settings()

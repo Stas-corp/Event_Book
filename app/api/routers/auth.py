@@ -27,9 +27,21 @@ def register_user(
     db: Session = Depends(get_db_session)
 ):
     user_repo = UserRepository(db)
-    service = AuthService(user_repo, settings.JWT_SECRET_KEY, settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    service = AuthService(
+        user_repo, 
+        settings.JWT_SECRET_KEY, 
+        settings.ACCESS_TOKEN_EXPIRE_MINUTES,
+        settings.REFRESH_TOKEN_EXPIRE_MINUTES
+    )
     try:
-        token = service.register_user(payload.email, payload.password, payload.name)
-        return {"access_token": token, "token_type": "bearer"}
+        token = service.register_user(
+            payload.email, 
+            payload.password, 
+            payload.name
+        )
+        return {
+            "tokens": token,
+            "token_type": "bearer"
+        }
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
