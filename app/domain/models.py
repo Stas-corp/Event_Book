@@ -52,6 +52,25 @@ class Booking:
         self.seats_booked = seats_booked
         self.created_at = created_at
 
+
+class RefreshToken:
+    def __init__(
+        self,
+        id: int,
+        user_id: int,
+        token_jti: str,
+        is_revoked: bool,
+        created_at: datetime,
+        expires_at: datetime
+    ):
+        self.id = id
+        self.user_id = user_id
+        self.token_jti = token_jti
+        self.is_revoked = is_revoked
+        self.created_at = created_at
+        self.expires_at = expires_at
+
+
 # Repository interfaces
 
 class IUser(Protocol):
@@ -87,3 +106,30 @@ class IBooking(Protocol):
         event_id: int,
         seats_booked: int
     ) -> Booking: ...
+
+
+class IRefreshToken(Protocol):
+    def create(
+        self,
+        user_id: int,
+        token_jti: str,
+        expires_at: datetime
+    ) -> RefreshToken: ...
+    
+    
+    def get_by_jti(
+        self,
+        token_jti: str
+    ) -> Optional[RefreshToken]: ...
+    
+    
+    def is_valid(
+        self,
+        token_jti: str
+    ) -> bool: ...
+    
+    
+    def revoke(
+        self,
+        token_jti: str
+    ) -> None: ...

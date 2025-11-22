@@ -14,7 +14,7 @@ def init_db():
     inspector = inspect(engine)
     existing_tables = inspector.get_table_names()
     
-    expected_tables = {"users", "events", "bookings"}
+    expected_tables = {"users", "events", "bookings", "refresh_tokens"}
     
     if not existing_tables:
         Base.metadata.create_all(bind=engine)
