@@ -1,6 +1,6 @@
 from app.domain.models import IUser
 from app.core.config import settings
-from app.core.security import hash_password, create_token_pair
+from app.core.security import hash_password, verify_password, create_token_pair
 
 class AuthService:
     def __init__(
@@ -33,3 +33,20 @@ class AuthService:
             self.access_jwt_expire_minutes,
             self.refresh_jwt_expire_minutes
         )
+    
+    
+    def login_user(
+        self,
+        email: str,
+        password: str
+    ) -> str:
+        if user := self.user_repo.get_by_email(email):
+            if verify_password(password, user.password_hash):
+                return create_token_pair(
+                    user.id, 
+                    self.jwt_secret, 
+                    self.access_jwt_expire_minutes,
+                    self.refresh_jwt_expire_minutes
+                )
+            raise RuntimeError("Incorrect password")
+        raise RuntimeError("Incorrect user")

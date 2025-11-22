@@ -21,6 +21,11 @@ class RegisterRequest(BaseModel):
     name: NameStr
 
 
+class LoginRequest(BaseModel):
+    email: EmailStr
+    password: PasswordStr
+
+
 @router.post("/register")
 def register_user(
     payload: RegisterRequest,
@@ -29,18 +34,42 @@ def register_user(
     user_repo = UserRepository(db)
     service = AuthService(
         user_repo, 
-        settings.JWT_SECRET_KEY, 
-        settings.ACCESS_TOKEN_EXPIRE_MINUTES,
-        settings.REFRESH_TOKEN_EXPIRE_MINUTES
+        settings.JWT_SECRET_KEY
     )
     try:
-        token = service.register_user(
+        tokens = service.register_user(
             payload.email, 
             payload.password, 
             payload.name
         )
+        
         return {
-            "tokens": token,
+            "tokens": tokens,
+            "token_type": "bearer"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.post("/login")
+def Login_user(
+    payload: LoginRequest,
+    db: Session = Depends(get_db_session)
+):
+    user_repo = UserRepository(db)
+    service = AuthService(
+        user_repo, 
+        settings.JWT_SECRET_KEY
+    )
+    
+    try:
+        tokens = service.login_user(
+            payload.email,
+            payload.password
+        )
+        
+        return {
+            "tokens": tokens,
             "token_type": "bearer"
         }
     except Exception as e:

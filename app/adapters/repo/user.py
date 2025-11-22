@@ -51,7 +51,7 @@ class UserRepository(IUser):
         
         Returns User domain object or None.
         """
-        obj = self.db.query(models.User).filter(models.User.email == email).first()
+        obj: User = self.db.query(models.User).filter(models.User.email == email).first()
         if obj:
             return User(obj.id, obj.email, obj.password_hash, obj.name, obj.created_at)
         return None
