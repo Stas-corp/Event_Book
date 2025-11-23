@@ -1,3 +1,4 @@
+import uuid
 from typing import Literal
 
 import jwt
@@ -30,12 +31,17 @@ def create_jwt_token(
     token_type: Literal["access", "refresh"] = "access"
 ) -> str:
     expire = datetime.now(UTC) + timedelta(minutes=expires_minutes)
+    jti = str(uuid.uuid4())
+    
     payload = {
         "user_id": user_id, 
         "exp": expire,
-        "type": token_type
+        "type": token_type,
+        "jti": jti,
+        "iat": datetime.now(UTC)
     }
-    return jwt.encode(payload, secret, algorithm="HS256")
+    
+    return jwt.encode(payload, secret, algorithm="HS256"), payload
 
 
 def decode_jwt_token(
@@ -55,15 +61,31 @@ def create_token_pair(
     secret: str,
     access_expires_minutes: int = settings.ACCESS_TOKEN_EXPIRE_MINUTES,
     refresh_expires_minutes: int = settings.REFRESH_TOKEN_EXPIRE_MINUTES
-) -> dict[str, str]:
-    access_token = create_jwt_token(
+) -> tuple[dict, dict]:
+    """
+    Creates a pair of tokens, access and refresh.
+    
+    Returns:
+        tuple: A tuple containing two dict:
+        - First dict:
+            - access_token (str): JWT access token.
+            - refresh_token (str): JWT refresh token.
+        - Second dict:
+            - refresh_payload (dict): payload refresh token.
+    
+    Example:
+        >>> tokens, payload = create_token_pair("user123")
+        >>> print(tokens["access_token"])
+        
+    """
+    access_token, _ = create_jwt_token(
         user_id=user_id,
         secret=secret,
         expires_minutes=access_expires_minutes,
         token_type="access"
     )
     
-    refresh_token = create_jwt_token(
+    refresh_token, refresh_payload = create_jwt_token(
         user_id=user_id,
         secret=secret,
         expires_minutes=refresh_expires_minutes,
@@ -72,8 +94,8 @@ def create_token_pair(
     
     return {
         "access_token": access_token,
-        "refresh_token": refresh_token
-    }
+        "refresh_token": refresh_token,
+    }, refresh_payload
 
 
 def refresh_access_token(

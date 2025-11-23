@@ -6,8 +6,10 @@ from fastapi import APIRouter, Depends, HTTPException
 
 from app.core.config import settings
 from app.api.deps import get_db_session
-from app.adapters.repo.user import UserRepository
 from app.services.auth_service import AuthService
+from app.adapters.repo.user import UserRepository
+from app.adapters.repo.refresh_token import RefreshTokenRepository
+
 
 router = APIRouter()
 
@@ -32,9 +34,11 @@ def register_user(
     db: Session = Depends(get_db_session)
 ):
     user_repo = UserRepository(db)
+    refresh_token_repo = RefreshTokenRepository(db)
     service = AuthService(
-        user_repo, 
-        settings.JWT_SECRET_KEY
+        user_repo=user_repo,
+        refresh_token_repo=refresh_token_repo,
+        jwt_secret=settings.JWT_SECRET_KEY
     )
     try:
         tokens = service.register_user(
