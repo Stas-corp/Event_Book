@@ -3,7 +3,7 @@ from datetime import datetime
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 from app.adapters.db import models
-from app.adapters.repo.event import EventRepository
+from app.adapters.repo.event_repo import EventRepository
 from app.domain.dtos import CreateEventDTO
 
 

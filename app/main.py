@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from app.api.routers import root, auth
+from app.api.routers import root, auth, event
 from app.adapters.db.init_db import init_db
 
 logging.basicConfig(
@@ -32,3 +32,4 @@ app = FastAPI(
 
 app.include_router(root.router)
 app.include_router(auth.router)
+app.include_router(event.router)

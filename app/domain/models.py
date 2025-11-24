@@ -7,16 +7,16 @@ class User:
     def __init__(
         self,
         id: int,
+        name: str,
         email: str,
         password_hash: str,
-        name: str,
         created_at: datetime
     ):
         self.id = id
-        self.email = email
-        self.password_hash = password_hash
         self.name = name
+        self.email = email
         self.created_at = created_at
+        self.password_hash = password_hash
 
 
 class Event:
@@ -49,8 +49,8 @@ class Booking:
         self.id = id
         self.user_id = user_id
         self.event_id = event_id
-        self.seats_booked = seats_booked
         self.created_at = created_at
+        self.seats_booked = seats_booked
 
 
 class RefreshToken:
@@ -86,6 +86,12 @@ class IUser(Protocol):
         self,
         email: str
     ) -> Optional[User]: ...
+    
+    
+    def get_by_id(
+        self,
+        id: int
+    ) -> Optional[User]: ...
 
 
 class IEvent(Protocol):
@@ -97,6 +103,11 @@ class IEvent(Protocol):
         max_seats: int, 
         owner_id: int
     ) -> Event: ...
+    
+    
+    def list_by_owner(
+        owner_id: int
+    ) -> Optional[list[Event]]: ...
 
 
 class IBooking(Protocol):
