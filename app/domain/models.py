@@ -1,6 +1,8 @@
 from datetime import datetime
 from typing import Optional, Protocol
 
+from app.domain.dtos import CreateEventDTO
+
 # Domain entitiens
 
 class User:
@@ -97,11 +99,7 @@ class IUser(Protocol):
 class IEvent(Protocol):
     def create(
         self, 
-        title: str, 
-        description: str, 
-        datetime: datetime, 
-        max_seats: int, 
-        owner_id: int
+        event_dto: CreateEventDTO
     ) -> Event: ...
     
     

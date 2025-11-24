@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from app.domain.dtos import CreateEventDTO
 from app.domain.models import IEvent, Event 
 
 
@@ -12,19 +13,11 @@ class EventService:
     
     
     def create_event(
-        self, 
-        title: str, 
-        description: str, 
-        datetime_: datetime, 
-        max_seats: int, 
-        owner_id: int
+        self,
+        event_dto: CreateEventDTO
     ) -> Event:
         return self.event_repo.create(
-            title, 
-            description, 
-            datetime_, 
-            max_seats, 
-            owner_id
+            event_dto
         )
     
     

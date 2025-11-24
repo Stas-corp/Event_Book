@@ -1,11 +1,16 @@
 import jwt
+from typing import Annotated
 from sqlalchemy.orm import Session
-from fastapi import HTTPException, Request, Depends
+from fastapi import HTTPException, Depends, status
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 from app.core.config import settings
 from app.adapters.db.base import SessionLocal
 from app.core.security import decode_jwt_token
-from app.adapters.repo.user import UserRepository, User
+from app.adapters.repo.user import UserRepository
+from app.domain.models import User
+
+http_bearee = HTTPBearer()
 
 def get_db_session():
     db = SessionLocal()
@@ -16,48 +21,40 @@ def get_db_session():
 
 
 def get_current_user(
-    request: Request,
+    credentials: HTTPAuthorizationCredentials = Depends(http_bearee),
     db: Session = Depends(get_db_session)
-    ) -> User:
-    auth_header = request.headers.get("Authorization")
-    
-    if not auth_header or not auth_header.startswith("Bearer "):
-        raise HTTPException(
-            status_code=401,
-            detail="Missing or invalid authorization header",
-            headers={"WWW-Authenticate": "Bearer"}
-        )
-    
-    token = auth_header.split(" ")[1]
+) -> User:
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
     
     try:
+        token = credentials.credentials
         payload = decode_jwt_token(
             token,
             settings.JWT_SECRET_KEY,
             token_type="access"
         )
-        
-        user_repo = UserRepository(db)
-        user = user_repo.get_by_id(payload["user_id"])
-        
-        if not user:
-            raise HTTPException(
-                status_code=404,
-                detail="User not found"
-            )
-        
-        return user
-        
+        user_id = payload.get("user_id")
+        if user_id is None:
+            raise credentials_exception
+            
     except jwt.ExpiredSignatureError:
         raise HTTPException(
-            status_code=401,
+            status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Access token expired",
-            headers={"WWW-Authenticate": "Bearer"}
+            headers={"WWW-Authenticate": "Bearer"},
         )
         
     except jwt.InvalidTokenError:
-        raise HTTPException(
-            status_code=401,
-            detail="Invalid token",
-            headers={"WWW-Authenticate": "Bearer"}
-        )
+        raise credentials_exception
+
+    user_repo = UserRepository(db)
+    user = user_repo.get_by_id(user_id)
+    
+    if user is None:
+        raise credentials_exception
+    
+    return user
