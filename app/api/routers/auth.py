@@ -35,6 +35,7 @@ def register_user(
 ):
     user_repo = UserRepository(db)
     refresh_token_repo = RefreshTokenRepository(db)
+    
     service = AuthService(
         user_repo=user_repo,
         refresh_token_repo=refresh_token_repo,
@@ -61,9 +62,12 @@ def Login_user(
     db: Session = Depends(get_db_session)
 ):
     user_repo = UserRepository(db)
+    refresh_token_repo = RefreshTokenRepository(db)
+    
     service = AuthService(
-        user_repo, 
-        settings.JWT_SECRET_KEY
+        user_repo=user_repo, 
+        jwt_secret=settings.JWT_SECRET_KEY,
+        refresh_token_repo=refresh_token_repo
     )
     
     try:

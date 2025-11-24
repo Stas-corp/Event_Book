@@ -53,5 +53,32 @@ class UserRepository(IUser):
         """
         obj: User = self.db.query(models.User).filter(models.User.email == email).first()
         if obj:
-            return User(obj.id, obj.email, obj.password_hash, obj.name, obj.created_at)
+            return User(
+                id=obj.id, 
+                email=obj.email, 
+                password_hash=obj.password_hash, 
+                name=obj.name, 
+                created_at=obj.created_at
+            )
+        return None
+    
+    
+    def get_by_id(
+        self, 
+        id: int
+    ) -> Optional[User]:
+        """
+        Searches for a user by id in the DB.
+        
+        Returns User domain object or None.
+        """
+        obj: User = self.db.query(models.User).filter(models.User.id == id).first()
+        if obj:
+            return User(
+                id=obj.id, 
+                email=obj.email, 
+                password_hash=obj.password_hash, 
+                name=obj.name, 
+                created_at=obj.created_at
+            )
         return None

@@ -29,7 +29,7 @@ def create_jwt_token(
     secret: str, 
     expires_minutes: int,
     token_type: Literal["access", "refresh"] = "access"
-) -> str:
+) -> tuple[str, dict]:
     expire = datetime.now(UTC) + timedelta(minutes=expires_minutes)
     jti = str(uuid.uuid4())
     
