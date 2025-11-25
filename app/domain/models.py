@@ -31,12 +31,24 @@ class Event:
         max_seats: int,
         owner_id: int
     ):
+        if max_seats < 1:
+            raise ValueError("max_seats cannot be less than 1")
+        
         self.id = id
         self.title = title
         self.description = description
         self.datetime = datetime
         self.max_seats = max_seats
         self.owner_id = owner_id
+    
+    
+    def has_available_seats(
+        self, 
+        currently_booked: int, 
+        requested_seats: int
+    ) -> bool:
+        available = self.max_seats - currently_booked
+        return available >= requested_seats
 
 
 class Booking:
@@ -104,8 +116,21 @@ class IEvent(Protocol):
     
     
     def list_by_owner(
+        self,
         owner_id: int
     ) -> Optional[list[Event]]: ...
+    
+    
+    def event_by_event_id(
+        self,
+        event_id: int
+    ) -> Optional[Event]: ...
+    
+    
+    def books_by_event_id(
+        self,
+        event_id: int
+    ) -> list[Booking]: ...
 
 
 class IBooking(Protocol):
@@ -115,6 +140,11 @@ class IBooking(Protocol):
         event_id: int,
         seats_booked: int
     ) -> Booking: ...
+    
+    def list_by_user(
+        self,
+        user_id: int
+    ) -> list[Booking]: ...
 
 
 class IRefreshToken(Protocol):

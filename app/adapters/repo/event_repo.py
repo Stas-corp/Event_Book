@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 
 from app.adapters.db import models
 from app.domain.dtos import CreateEventDTO
-from app.domain.models import Event, IEvent
+from app.domain.models import Event, IEvent, Booking
 
 
 class EventRepository(IEvent):
@@ -28,6 +28,26 @@ class EventRepository(IEvent):
         owner_id: int
     ) -> list[Event]:
         obj = self.db.query(models.Event).filter(models.Event.owner_id == owner_id).all()
+        if obj:
+            return obj
+        return None
+    
+    
+    def event_by_event_id(
+        self, 
+        event_id: int
+    ) -> Event:
+        obj = self.db.query(models.Event).filter(models.Event.id == event_id).first()
+        if obj:
+            return self._map_to_domain(obj)
+        return None
+    
+    
+    def books_by_event_id(
+        self,
+        event_id: int
+    ) -> list[Booking]:
+        obj = self.db.query(models.Booking).filter(models.Booking.event_id == event_id).all()
         if obj:
             return obj
         return None

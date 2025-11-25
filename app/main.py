@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.routers import root, auth, event
+from app.api.routers import root, auth, event, booking
 from app.adapters.db.init_db import init_db
 
 logging.basicConfig(
@@ -48,3 +48,4 @@ app.add_middleware(
 app.include_router(root.router)
 app.include_router(auth.router)
 app.include_router(event.router)
+app.include_router(booking.router)

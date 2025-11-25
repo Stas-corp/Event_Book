@@ -9,3 +9,10 @@ class CreateEventDTO:
     datetime: datetime
     max_seats: int
     owner_id: int
+
+
+@dataclass
+class CreateBookingDTO:
+    user_id: int
+    event_id: int
+    seats_booked: int

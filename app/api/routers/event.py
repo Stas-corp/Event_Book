@@ -42,11 +42,14 @@ def my_events(
     return service.create_event(event_dto)
 
 
-@router.get("/my/events", response_model=List[EventResponse])
+@router.get("/my/events")
 def my_events(
     db: Session = Depends(get_db_session),
     user: User = Security(get_current_user)
 ):
     event_repo = EventRepository(db)
     service = EventService(event_repo)
-    return [EventResponse(**vars(e)) for e in service.list_events_by_owner(user.id)]
+    events = service.list_events_by_owner(user.id)
+    if events:
+        return [EventResponse(**vars(e)) for e in events]
+    return None

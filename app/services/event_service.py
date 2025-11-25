@@ -21,6 +21,20 @@ class EventService:
         )
     
     
+    def event_by_id(
+        self,
+        event_id: int
+    ) -> Event:
+        return self.event_repo.event_by_event_id(event_id)
+    
+    
+    def books_by_id(
+        self,
+        event_id: int
+    ) -> Event:
+        return self.event_repo.books_by_event_id(event_id)
+    
+    
     def list_events_by_owner(
         self, 
         owner_id: int
