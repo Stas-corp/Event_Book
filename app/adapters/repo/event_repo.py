@@ -28,9 +28,7 @@ class EventRepository(IEvent):
         owner_id: int
     ) -> list[Event]:
         obj = self.db.query(models.Event).filter(models.Event.owner_id == owner_id).all()
-        if obj:
-            return obj
-        return None
+        return [self._map_to_domain(o) for o in obj]
     
     
     def event_by_event_id(
@@ -48,9 +46,7 @@ class EventRepository(IEvent):
         event_id: int
     ) -> list[Booking]:
         obj = self.db.query(models.Booking).filter(models.Booking.event_id == event_id).all()
-        if obj:
-            return obj
-        return None
+        return [self._map_to_domain(o) for o in obj]
     
     
     def _map_to_domain(

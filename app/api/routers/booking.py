@@ -1,5 +1,5 @@
-from pydantic import BaseModel
 from sqlalchemy.orm import Session
+from pydantic import BaseModel, Field
 from fastapi import APIRouter, Depends, Security, Path
 
 from app.domain.models import User
@@ -13,7 +13,7 @@ router = APIRouter()
 
 
 class BookingCreate(BaseModel):
-    seats_booked: int
+    seats_booked: int = Field(..., gt=0)
 
 
 @router.post("/events/{id}/book")

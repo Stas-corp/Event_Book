@@ -1,8 +1,8 @@
 from datetime import datetime
 from typing import List, Optional
 
-from pydantic import BaseModel
 from sqlalchemy.orm import Session
+from pydantic import BaseModel, Field
 from fastapi import APIRouter, Depends, Security
 
 from app.domain.models import User
@@ -24,14 +24,14 @@ class EventResponse(BaseModel):
 
 
 class EventCreate(BaseModel):
-    title: str
-    description: Optional[str]
+    title: str = Field(..., min_length=1, max_length=255)
+    description: Optional[str] = Field(None, max_length=5000)
     datetime: datetime
-    max_seats: int
+    max_seats: int = Field(..., gt=0)
 
 
 @router.post("/event")
-def my_events(
+def create_event(
     body: EventCreate,
     db: Session = Depends(get_db_session),
     user: User = Security(get_current_user)
@@ -43,7 +43,7 @@ def my_events(
 
 
 @router.get("/my/events")
-def my_events(
+def get_my_events(
     db: Session = Depends(get_db_session),
     user: User = Security(get_current_user)
 ):

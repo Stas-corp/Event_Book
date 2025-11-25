@@ -2,17 +2,18 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 
-@dataclass
-class CreateEventDTO:
-    title: str
-    description: Optional[str]
+from pydantic import BaseModel, Field, field_validator
+
+
+class CreateEventDTO(BaseModel):
+    title: str = Field(..., min_length=1, max_length=255)
+    description: Optional[str] = Field(None, max_length=5000)
     datetime: datetime
-    max_seats: int
-    owner_id: int
+    max_seats: int = Field(..., gt=0, le=10000)
+    owner_id: int = Field(..., gt=0)
 
 
-@dataclass
-class CreateBookingDTO:
-    user_id: int
-    event_id: int
-    seats_booked: int
+class CreateBookingDTO(BaseModel):
+    user_id: int = Field(..., gt=0)
+    event_id: int = Field(..., gt=0)
+    seats_booked: int = Field(..., gt=0)
