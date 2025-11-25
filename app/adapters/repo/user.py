@@ -6,6 +6,15 @@ from app.adapters.db import models
 from app.domain.models import IUser, User
 
 class UserRepository(IUser):
+    """
+    Репозиторій для роботи з користувачами в БД.
+    
+    Забезпечує операції CRUD для користувачів, включаючи пошук за email та ID.
+    Трансформує DB моделі у доменні об'єкти.
+    
+    Attributes:
+        db (Session): SQLAlchemy сесія для роботи з БД.
+    """
     def __init__(self, db: Session):
         self.db = db
     
@@ -17,11 +26,18 @@ class UserRepository(IUser):
         name: str
     ) -> User:
         """
-        Creates user in DB.
+        Створює нового користувача в БД.
         
-        Add SQLAlchemy model, commits, updates.
+        Додає новий запис користувача, фіксує зміни в БД,
+        оновлює об'єкт та повертає доменний об'єкт User.
         
-        Return User domain object.
+        Args:
+            email (str): Унікальна email адреса користувача.
+            password_hash (str): Захешована пароль користувача.
+            name (str): Ім'я користувача.
+            
+        Returns:
+            User: Доменний об'єкт
         """
         new_user = models.User(
             email=email,
@@ -47,9 +63,15 @@ class UserRepository(IUser):
         email: str
     ) -> Optional[User]:
         """
-        Searches for a user by email in the DB.
+        Пошук користувача за email адресою.
         
-        Returns User domain object or None.
+        Виконує запит до БД для знаходження користувача з заданним email.
+        
+        Args:
+            email (str):
+            
+        Returns:
+            Optional[User]: Доменний об'єкт
         """
         obj: User = self.db.query(models.User).filter(models.User.email == email).first()
         if obj:
@@ -68,9 +90,15 @@ class UserRepository(IUser):
         id: int
     ) -> Optional[User]:
         """
-        Searches for a user by id in the DB.
+        Пошук користувача за його ID.
         
-        Returns User domain object or None.
+        Виконує запит до БД для знаходження користувача з заданим ID.
+        
+        Args:
+            id (int):
+            
+        Returns:
+            Optional[User]: Доменний об'єкт
         """
         obj: User = self.db.query(models.User).filter(models.User.id == id).first()
         if obj:

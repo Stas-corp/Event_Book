@@ -13,6 +13,14 @@ from app.domain.models import User
 http_bearee = HTTPBearer()
 
 def get_db_session():
+    """
+    Генератор для отримання SQLAlchemy сесії БД.
+    
+    Створює нову сесію для кожного запиту та гарантуює закриття навіть при помилках.
+    
+    Yields:
+        Session: SQLAlchemy сесія
+    """
     db = SessionLocal()
     try:
         yield db
@@ -24,6 +32,19 @@ def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(http_bearee),
     db: Session = Depends(get_db_session)
 ) -> User:
+    """
+    Отримує поточного автентифікованого користувача з JWT токена.
+    
+    Перевіряє JWT токен, декодує його, знаходить користувача в БД.
+    Використовується як залежність для захищених ендпоінтів, які потребують аутентифікації.
+    
+    Args:
+        credentials (HTTPAuthorizationCredentials): Bearer токен.
+        db (Session): 
+        
+    Returns:
+        User: Доменний об'єкт
+    """
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",

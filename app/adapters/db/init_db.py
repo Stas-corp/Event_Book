@@ -7,9 +7,12 @@ logger = logging.getLogger(__name__)
 
 def init_db():
     """
-    Checks for the tables in the database.
+    Ініціалізує структуру БД (таблиці).
     
-    If the tables do not exist - creates them.
+    Перевіряє наявність таблиць у БД. Якщо таблиці не існують,
+    створює їх на основі ORM моделей.
+    
+    При частковій наявності таблиць, всі таблиці перестворюються для забезпечення консистентності.
     """
     inspector = inspect(engine)
     existing_tables = inspector.get_table_names()

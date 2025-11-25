@@ -6,6 +6,13 @@ from app.domain.models import Booking, Event, IBooking
 
 
 class BookingRepository(IBooking):
+    """
+    Репозиторій для роботи з бронюваннями подій в БД.
+    
+    Керує CRUD операціями для бронювань, створення 
+    та отриманя існуючих конкретного користувача.
+    Автоматично трансформує моделі у доменні об'єкти.
+    """
     def __init__(self, db: Session):
         self.db = db
     
@@ -14,6 +21,18 @@ class BookingRepository(IBooking):
         self,
         dto: CreateBookingDTO
     ) -> Booking:
+        """
+        Створює нове бронювання в БД.
+        
+        Приймає DTO з даними бронювання, створює новий запис в таблиці bookings,
+        комітить зміни та повертає доменний об'єкт.
+        
+        Args:
+            dto (CreateBookingDTO):
+                
+        Returns:
+            Booking: Доменний об'єкт
+        """
         new_book = models.Booking(**dto.__dict__)
         
         self.db.add(new_book)

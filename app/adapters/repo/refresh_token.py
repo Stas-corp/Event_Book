@@ -7,6 +7,12 @@ from app.domain.models import RefreshToken, IRefreshToken
 
 
 class RefreshTokenRepository(IRefreshToken):
+    """
+    Репозиторій для роботи з refresh токенами в БД.
+    
+    Забезпечує створення новог refresh токену та зберігає інформацію в БД.
+    Автоматично трансформує моделі у доменні об'єкти.
+    """
     def __init__(self, db: Session):
         self.db = db
     
@@ -17,6 +23,19 @@ class RefreshTokenRepository(IRefreshToken):
         token_jti: str,
         expires_at: datetime
     ) -> RefreshToken:
+        """
+        Створює новий refresh токен в БД.
+        
+        Токен автоматично помічається як не відкликаний (is_revoked=False).
+        
+        Args:
+            user_id (int): 
+            token_jti (str): 
+            expires_at (datetime): 
+                
+        Returns:
+            RefreshToken: Доменний об'єкт
+        """
         token_model = models.RefreshToken(
             user_id=user_id,
             token_jti=token_jti,

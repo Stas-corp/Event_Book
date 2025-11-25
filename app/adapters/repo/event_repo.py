@@ -6,6 +6,17 @@ from app.domain.models import Event, IEvent, Booking
 
 
 class EventRepository(IEvent):
+    """
+    Репозиторій для роботи з подіями в БД.
+    
+    Керує CRUD операціями для подій, створення нових подій,
+    пошук подій, отримання всіх подій конкретного власника,
+    та отримання всіх бронювань для конкретної подієї.
+    Автоматично трансформує моделі у доменні об'єкти.
+    
+    Attributes:
+        db (Session): SQLAlchemy сесія
+    """
     def __init__(self, db: Session):
         self.db = db
     
@@ -14,6 +25,19 @@ class EventRepository(IEvent):
         self,
         dto: CreateEventDTO
     ) -> Event:
+        """
+        Створює нову подію в БД.
+        
+        Приймає DTO з даними події, створює новий запис в таблиці events,
+        комітить зміни та повертає доменний об'єкт.
+        
+        Args:
+            dto (CreateEventDTO): 
+            
+        Returns:
+            Event: Доменний об'єкт
+            
+        """
         new_event = models.Event(**dto.__dict__)
         
         self.db.add(new_event)

@@ -5,6 +5,12 @@ from app.domain.models import IUser, IRefreshToken
 from app.core.security import hash_password, verify_password, create_token_pair
 
 class AuthService:
+    """
+    Сервіс для управління аутентифікацією та авторизацією користувачів.
+    
+    Забезпечує реєстрацію користувачів та вхід в систему.
+    Використовує репозиторії для роботи з БД та функції безпеки для хешування паролів.
+    """
     def __init__(
         self,
         user_repo: IUser,
@@ -26,6 +32,20 @@ class AuthService:
         password: str, 
         name: str
     ) -> str:
+        """
+        Реєструє нового користувача в системі.
+        
+        Перевіряє, чи email не існує, хешує пароль, створює користувача в БД,
+        генерує пару JWT токенів (access + refresh) та зберігає refresh токен в БД.
+        
+        Args:
+            email (str): 
+            password (str): 
+            name (str):
+            
+        Returns:
+            dict: Словник з ключами 'access_token' та 'refresh_token'.
+        """
         if self.user_repo.get_by_email(email):
             raise RuntimeError("Email already in use")
         password_hash = hash_password(password)
@@ -53,6 +73,19 @@ class AuthService:
         email: str,
         password: str
     ) -> str:
+        """
+        Вхід користувача в систему.
+        
+        Знаходить користувача за email, перевіряє пароль, та якщо вірно,
+        генерує нову пару JWT токенів та зберігає refresh токен в БД.
+        
+        Args:
+            email (str):
+            password (str):
+            
+        Returns:
+            dict: Словник з ключами 'access_token' та 'refresh_token'.
+        """
         if user := self.user_repo.get_by_email(email):
             if verify_password(password, user.password_hash):
                 tokens, refresh_payload = create_token_pair(

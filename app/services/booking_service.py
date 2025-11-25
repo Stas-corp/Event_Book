@@ -5,6 +5,13 @@ from app.domain.models import  Booking, Event, IBooking, IEvent
 
 
 class BookingService:
+    """
+    Сервіс для управління бронюванням подій.
+    
+    Забезпечує створення бронювань та отримання списку заброньованих подій
+    користувачем.
+    Перевіряє доступність місць та першкоджає повторного дублювання одним користувачем.
+    """
     def __init__(
         self,
         booking_repo: IBooking,
@@ -18,6 +25,23 @@ class BookingService:
         self,
         booking_dto: CreateBookingDTO
     ) -> Booking:
+        """
+        Створює бронювання користувача на подію.
+        
+        Перевіряє:
+        - Чи існує подія
+        - Чи користувач не заброньував цю подію раніше
+        - Чи достатньо вільних місць для запиту
+        
+        Якщо всі перевірки пройдено, створює бронювання в БД.
+        
+        Args:
+            booking_dto (CreateBookingDTO):
+            
+        Returns:
+            Booking: Доменний об'єкт.
+            
+        """
         event = self.event_repo.event_by_event_id(booking_dto.event_id)
         if not event:
             raise HTTPException(
